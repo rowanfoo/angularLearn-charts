@@ -1,0 +1,125 @@
+<html>
+
+<head>
+
+    <html>
+
+    <head>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
+
+        <script src="http://code.highcharts.com/stock/highstock.js"></script>
+        <script src="http://code.highcharts.com/stock/modules/exporting.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+        <script src="https://code.highcharts.com/stock/indicators/indicators.js"></script>
+        <script src="https://code.highcharts.com/stock/indicators/ema.js"></script>
+        <script src="https://code.highcharts.com/stock/indicators/rsi.js"></script>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular.min.js"></script>
+        <script src="js/mychart4.js"></script>
+
+        <script type="text/javascript">
+            var app = angular.module("app", []);
+            // var serverurl = "http://192.168.0.10:10500/";
+
+            var serverurl = "http://localhost:8080/";
+
+            app.controller("HelloController", function ($scope, $rootScope, $http, $interval) {
+                $scope.message = "Hello, AngularJS";
+                var url = serverurl + "dategt?date=2019-01-01&code=BHP.AX";
+                //  var seriesOptions = [];
+                var counter = 0;
+                var rsicode = [];
+
+                getData($http, url).then(function (value) {
+                    console.log('------------draw1------------ ');
+                    createChart(value, "container");
+
+                    console.log('------------draw2------------ ');
+
+                    var url2 = serverurl + "rsi";
+                    $http.get(url2).then(function (data1) {
+                        data1.data.forEach(function (value) {
+                            console.log('------------RSICODE------------ ' + value.code);
+                            rsicode.push(value.code);
+                        });
+                        console.log('------------RSICODE XX------------ ' + rsicode);
+                        $interval(callAtInterval, 5000);
+                    });
+
+
+                });
+
+
+                function callAtInterval() {
+                    console.log('------INTERVAL---ALL----CODE--------- ' + rsicode);
+                    console.log('------INTERVAL---ALL----CODE--------- ' + rsicode[0]);
+                    var code = rsicode[counter++];
+                    $scope.code = code;
+                    var intervalurl = serverurl + "/dategt?date=2019-01-01&code=" + code;
+
+                    console.log('------INTERVAL-------CODE--------- ' + code);
+
+
+                    getData($http, intervalurl).then(function (value) {
+                        createChart(value, "container");
+                    });
+
+
+                };
+
+
+            })
+            ;
+
+            function getData($http, url) {
+                var myurl = url
+                var seriesOptions = [];
+                var mydate = [];
+                console.log("START-----getData : ");
+
+
+                return new Promise(function (resolve, reject) {
+                    console.log("START-----getData 1 : ");
+                    $http.get(myurl).then(function (data) {
+                        // console.log(JSON.stringify(data, null, "    "));
+
+                        data.data.forEach(function (value) {
+                            seriesOptions.push([
+                                new Date(value.date).getTime(), // the date
+                                value.open, // open
+                                value.high, // high
+                                value.low, // low
+                                value.close// close
+                            ]);
+                        });
+
+
+                        console.log('------------DONE--getData---------- ');
+                        resolve(seriesOptions);
+                        console.log('-------------RETURN---getData--------- ');
+                    });
+                    console.log('-------------DONE---getData--------- ');
+                });
+
+
+                console.log('-------------RETURN---------- ');
+
+            }
+
+
+        </script>
+
+    </head>
+    <html>
+<body ng-app="app">
+<div ng-controller="HelloController">
+    <h2>{{message}}</h2>
+    <h2>{{code}}</h2>
+</div>
+<div id="container" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>
+
+</body>
+</html>
+
+

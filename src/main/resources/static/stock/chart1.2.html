@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular.min.js"></script>
+    <script src="http://code.highcharts.com/stock/highstock.js"></script>
+    <script src="http://code.highcharts.com/stock/modules/exporting.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="stock/js/mychartv2.js"></script>
+    <script src="stock/js/utility1.js"></script>
+
+
+    <script>
+        var app = angular.module("app", []);
+
+        app.controller("HelloController", function ($scope, $rootScope, $http) {
+            $scope.message = "Hello, AngularJS";
+            $rootScope.url = "http://192.168.0.10:10500/dategt?date=2019-01-01&code=BHP.AX";
+            // console.log(JSON.stringify(getData($http, $rootScope, "BHP.AX"), null, "    "));
+            // var abc = getData($http, $rootScope, "BHP.AX");
+            // console.log("here")
+            // console.log(abc)
+
+
+            var myurl = $rootScope.url
+            var seriesOptions = [];
+            console.log("START RUN : ");
+            // var abc = getData($http, $rootScope, "BHP.AX");
+
+
+            getData($http, $rootScope, "BHP.AX").then(function (x) {
+                console.log('-----getDataxxxx 1-------' + x)
+
+                //  console.log('-----getDataxxxx-------' + x.price)
+                ///  console.log(x.price)
+//                createChart(x.price);
+                createChart(x);
+            })
+
+//            $http.get(myurl).then(function (data) {
+            // console.log(JSON.stringify(data, null, "    "));
+
+            // console.log("xx : " + data);
+            // console.log("xx : " + data.data[0]);
+            // console.log("xx : " + data.data[0].date);
+            // for (i in data.data) {
+            //     // console.log("i : " + i);
+            //     // console.log("data : " + data.data[i]);
+            //     // console.log("data : " + data.data[i].date);
+            //     seriesOptions.push([new Date(data.data[i].date).getTime(), data.data[i].close]);
+            // }
+//                 data.data.forEach(function (value) {
+//                     console.log('------------value------------ ' + value.date);
+//                     seriesOptions.push([new Date(value.date).getTime(), value.close]);
+//
+//                 });
+// //                console.log("xx : " + seriesOptions);
+//
+//                 console.log('------------DONE--getData---------- ');
+//                 createChart(seriesOptions);
+//                 console.log('-------------RETURN---getData--------- ');
+//
+//
+//             });
+//
+
+
+            // $http.get(myurl).then(function (data) {
+            //     // console.log(JSON.stringify(data, null, "    "));
+            //
+            //     data.data.forEach(function (value) {
+            //         seriesOptions.push([new Date(value.date).getTime(), value.close]);
+            //     })
+            //     console.log('----------------getData--------- ' + seriesOptions);
+            //     createChart(seriesOptions);
+            // });
+
+            console.log("DONE DATA : ");
+            // console.log('------------DATAxx------------ ' + abc);
+            // console.log('------------DATAxx------------ ' + abc.price);
+            // console.log('------------DATAxx------------ ' + abc.volume);
+            //
+            //  createChart(abc);
+
+
+        });
+
+
+
+
+
+    </script>
+
+</head>
+<body ng-app="app">
+<div ng-controller="HelloController">
+    <h2>{{message}}</h2>
+</div>
+<div id="container" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>
+
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular.min.js"></script>
+    <script src="http://code.highcharts.com/stock/highstock.js"></script>
+    <script src="http://code.highcharts.com/stock/modules/exporting.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <!--    <script src="stock/js/mychartv1.js"></script>-->
+    <!--    <script src="stock/js/utility.js"></script>-->
+    <script src="js/mychartv1.js"></script>
+    <script src="js/utility.js"></script>
+
+    <script>
+        var app = angular.module("app", []);
+
+        app.controller("HelloController", function ($scope, $rootScope, $http) {
+            $scope.message = "Hello, AngularJS";
+//            $rootScope.url = "http://192.168.0.10:10500/dategt?date=2019-01-01&code=BHP.AX";
+            $rootScope.url = "http://localhost:8080/dategt?date=2018-01-01&code=BHP.AX";
+            // console.log(JSON.stringify(getData($http, $rootScope, "BHP.AX"), null, "    "));
+            // var abc = getData($http, $rootScope, "BHP.AX");
+            // console.log("here")
+            // console.log(abc)
+
+
+            chartfunc(getData($http, $rootScope, "BHP.AX"));
+
+        })
+        ;
+
+
+    </script>
+
+</head>
+<body ng-app="app">
+<div ng-controller="HelloController">
+    <h2>{{message}}</h2>
+</div>
+<div id="container" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>
+
+</body>
+</html>

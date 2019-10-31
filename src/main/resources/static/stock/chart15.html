@@ -1,0 +1,300 @@
+<html>
+
+<head>
+
+    <html>
+
+    <head>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
+
+        <script src="http://code.highcharts.com/stock/highstock.js"></script>
+        <script src="http://code.highcharts.com/stock/modules/exporting.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+        <script src="https://code.highcharts.com/stock/indicators/indicators.js"></script>
+        <script src="https://code.highcharts.com/stock/indicators/ema.js"></script>
+        <script src="https://code.highcharts.com/stock/indicators/rsi.js"></script>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular.min.js"></script>
+
+        <script type="text/javascript">
+            var chart;
+            var date = new Date();
+
+
+            function getMax(dataset) {
+                var max = Math.max.apply(Math, dataset.map(function (o) {
+                    return o[4];
+                }));
+                return max + (max * 0.3);
+            }
+
+            function getMin(dataset) {
+                var min = Math.min.apply(Math, dataset.map(function (o) {
+                    return o[4];
+                }));
+                return min - (min * 0.3);
+            }
+
+
+            /**
+             * Create the chart when all data is loaded
+             * @returns {undefined}
+             */
+            function createChart(seriesOptions, name) {
+                var date = new Date();
+                // create the chart
+                // chart = new  Highcharts.StockChart('container', {
+                chart = new Highcharts.StockChart(name, {
+
+                    // chart: {
+                    //     width: 1200,
+                    //     height: 600
+                    // },
+                    // xAxis: {
+                    //     min: Date.UTC(date.getFullYear() - 1, 1, 1, 16, 00), //previous day  at 16.00
+                    //     max: new Date().getTime() //get actual time
+                    // },
+                    // yAxis: [{
+                    //
+                    //     title: {
+                    //         text: 'OHLC'
+                    //     },
+                    //     top: 100,
+                    //     height: 550,
+                    //
+                    // },
+                    //
+                    // ],
+
+
+                    legend: {
+                        enabled: false
+                    },
+
+                    xAxis: {
+                        min: Date.UTC(date.getFullYear() - 1, 1, 1, 16, 00), //previous day  at 16.00
+                        max: new Date().getTime() //get actual time
+                    },
+
+                    rangeSelector: {
+                        enabled: false
+                    },
+
+                    navigator: {
+                        enabled: false
+                    },
+
+                    tooltip: {
+                        split: true
+                    },
+
+                    yAxis: [{
+
+                        // title: {
+                        //     text: 'OHLC'
+                        // },
+                        // top: 50,
+                        // height: 400,
+                        opposite: false,
+                        min: getMin(seriesOptions),
+                        max: getMax(seriesOptions)
+                        // min: 20,
+                        // max: 50
+                    }
+
+                    ],
+
+
+                    series: [{
+                        type: 'ohlc',
+                        id: 'aapl',
+                        data: seriesOptions,
+
+                        // dataGrouping: {
+                        //     enabled: true,
+                        //     units: [['month', [1]]]
+                        //
+                        // }
+
+                    },
+                        {
+                            type: 'sma',
+                            name: 'sma50',
+                            linkedTo: 'aapl',
+
+                            params: {
+                                period: 100
+                            }
+                        }
+
+
+                    ]
+                });
+            }
+
+
+            var app = angular.module("app", []);
+
+            app.controller("HelloController", function ($scope, $rootScope, $http, $interval) {
+                $scope.message = "Hello, AngularJS";
+                var url = "http://192.168.0.10:10500/dategt?date=2019-01-01&code=BHP.AX";
+                //  var seriesOptions = [];
+                var counter = 0;
+                var rsicode = [];
+
+                getData($http, "http://192.168.0.10:10500/dategt?date=2019-01-01&code=BHP.AX").then(function (value) {
+                    console.log('------------draw1------------ ');
+                    createChart(value, "container");
+
+                    console.log('------------draw2------------ ');
+
+                    var url2 = 'http://192.168.0.10:10500/rsi';
+                    $http.get(url2).then(function (data1) {
+                        data1.data.forEach(function (value) {
+                            console.log('------------RSICODE------------ ' + value.code);
+                            rsicode.push(value.code);
+                        });
+                        console.log('------------RSICODE XX------------ ' + rsicode);
+                        $interval(callAtInterval, 5000);
+                    });
+
+
+                });
+
+
+                function callAtInterval() {
+                    console.log('------INTERVAL---ALL----CODE--------- ' + rsicode);
+                    console.log('------INTERVAL---ALL----CODE--------- ' + rsicode[0]);
+                    var code = rsicode[counter++];
+                    $scope.code = code;
+                    var intervalurl = "http://192.168.0.10:10500/dategt?date=2019-01-01&code=" + code;
+                    console.log('------INTERVAL-------CODE--------- ' + code);
+
+
+                    getData($http, intervalurl).then(function (value) {
+                        createChart(value, "container");
+                    });
+
+
+                };
+
+
+                // $http.get(url).then(function (data) {
+                //     data.data.forEach(function (value) {
+                //         // console.log('------------value------------ ' + value.date);
+                //         seriesOptions.push([
+                //             new Date(value.date).getTime(), // the date
+                //             value.open, // open
+                //             value.high, // high
+                //             value.low, // low
+                //             value.close// close
+                //         ]);
+                //     });
+                //     console.log('-------------DONE---getData v1--------- ');
+                //     createChart(seriesOptions, "container");
+                //
+                //
+                //     var url2 = 'http://192.168.0.10:10500/rsi';
+                //     $http.get(url2).then(function (data1) {
+                //
+                //         data1.data.forEach(function (value) {
+                //             console.log('------------RSICODE------------ ' + value.code);
+                //             rsicode.push(value.code);
+                //         });
+                //         console.log('------------RSICODE XX------------ ' + rsicode);
+                //         $interval(callAtInterval, 5000);
+                //     });
+                //     console.log('-------------DONE---RSI--------- ');
+                //
+                //
+                //     function callAtInterval() {
+                //         console.log('------INTERVAL---ALL----CODE--------- ' + rsicode);
+                //         console.log('------INTERVAL---ALL----CODE--------- ' + rsicode[0]);
+                //         var code = rsicode[counter++];
+                //         $scope.code = code;
+                //         var intervalurl = "http://192.168.0.10:10500/dategt?date=2019-01-01&code=" + code;
+                //         console.log('------INTERVAL-------CODE--------- ' + code);
+                //
+                //         $http.get(intervalurl).then(function (data) {
+                //             seriesOptions = [];
+                //             data.data.forEach(function (value) {
+                //                 seriesOptions.push([
+                //                     new Date(value.date).getTime(), // the date
+                //                     value.open, // open
+                //                     value.high, // high
+                //                     value.low, // low
+                //                     value.close// close
+                //                 ]);
+                //             });
+                //             console.log('-------------DONE---getData v1--------- ');
+                //             createChart(seriesOptions, "container");
+                //         });
+                //
+                //
+                //     };
+                //
+                //
+                // });
+
+
+            })
+            ;
+
+            function getData($http, url) {
+                var myurl = url
+                var seriesOptions = [];
+                var mydate = [];
+                console.log("START-----getData : ");
+
+
+                return new Promise(function (resolve, reject) {
+                    console.log("START-----getData 1 : ");
+                    $http.get(myurl).then(function (data) {
+                        // console.log(JSON.stringify(data, null, "    "));
+
+                        // data.data.forEach(function (value) {
+                        //     //  console.log('------------value------------ ' + value.date);
+                        //     seriesOptions.push([new Date(value.date).getTime(), value.close]);
+                        // });
+                        //
+
+                        data.data.forEach(function (value) {
+                            seriesOptions.push([
+                                new Date(value.date).getTime(), // the date
+                                value.open, // open
+                                value.high, // high
+                                value.low, // low
+                                value.close// close
+                            ]);
+                        });
+
+
+                        console.log('------------DONE--getData---------- ');
+                        resolve(seriesOptions);
+                        console.log('-------------RETURN---getData--------- ');
+                    });
+                    console.log('-------------DONE---getData--------- ');
+                });
+
+
+                console.log('-------------RETURN---------- ');
+
+            }
+
+
+        </script>
+
+    </head>
+    <html>
+<body ng-app="app">
+<div ng-controller="HelloController">
+    <h2>{{message}}</h2>
+    <h2>{{code}}</h2>
+</div>
+<div id="container" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>
+
+</body>
+</html>
+
+
