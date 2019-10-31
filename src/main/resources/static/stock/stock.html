@@ -30,6 +30,17 @@
     <script type="text/javascript"
             src="http://cdn.datatables.net/plug-ins/1.10.7/integration/bootstrap/3/dataTables.bootstrap.js"></script>
 
+
+    <!-- Angular Material requires Angular.js Libraries -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.6/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.6/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.6/angular-aria.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.6/angular-messages.min.js"></script>
+
+    <!-- Angular Material Library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.12/angular-material.min.js"></script>
+
+
     <script language="javascript">
         $(document).ready(function () {
             $('#example').DataTable();
@@ -49,6 +60,9 @@
             }).when('/student/', {
                 templateUrl: '/angularWork/static/stock/route/view.html',
                 controller: 'loginController'
+            }).when('/mychart/:type/', {
+                templateUrl: '/angularWork/static/stock/route/view1.html',
+                controller: 'mychartController'
             });
 
         });
@@ -67,7 +81,7 @@
 
         }]);
 
-        module.controller('loginController', ['$scope', '$routeParams', '$http', function ($scope, $routeParams, $http) {
+        module.controller('loginController', ['$scope', '$routeParams', '$http', '$location', function ($scope, $routeParams, $http, $location) {
             var type = $routeParams.type
 
             console.log('-----------HERE IN CONTROLLER-----------' + type);
@@ -78,6 +92,11 @@
                 $scope.data = data.data
 
             });
+
+            $scope.routeaclick = function () {
+                alert('ROUATE A - to go');
+                $location.path('/mychart/');
+            };
 
 
         }]);
