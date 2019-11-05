@@ -55,35 +55,12 @@
 <!--<md-button class="md-raised">Button</md-button>-->
 
 
-<!--"code": "TGR.AX",-->
-<!--"date": "2019-09-04",-->
-<!--"type": "RSI below 30% ",-->
-<!--"message": "RSI  21.839080459770237"-->
-<script type="text/javascript">
-
-    var module = angular.module('app', ['ngMaterial', 'ngRoute']);
-
-    module.controller('mychartController', ['$scope', '$routeParams', '$http', function ($scope, $routeParams, $http) {
-        var type = $routeParams.type
-
-        console.log('-----------HERE IN CONTROLLER-----------' + type);
-        var rsicode = [];
-        var serverurl = "http://localhost:8080/";
-        var url2 = serverurl + type;
-        $http.get(url2).then(function (data1) {
-            data1.data.forEach(function (value) {
-                console.log('------------RSICODE------------ ' + value.code);
-                rsicode.push(value.code);
-            });
-            console.log('------------RSICODE XX------------ ' + rsicode);
-            //  $interval(callAtInterval, 5000);
-        });
-
-
-    }]);
-
-
-</script>
-
-
 <h1>HELLO WORLD </h1>
+<!--<div id="container" ng-controller="mychartController"-->
+<!--     style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>-->
+<div id="container"
+     style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>
+<h2>{{code }} </h2>
+<br>
+
+<h2> {{message}} </h2>
